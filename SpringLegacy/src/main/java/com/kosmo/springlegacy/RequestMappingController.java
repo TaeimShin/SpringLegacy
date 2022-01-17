@@ -4,8 +4,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import common.StudentDTO;
 
 @Controller
 public class RequestMappingController {
@@ -23,15 +28,53 @@ public class RequestMappingController {
 	@RequestMapping(value="/requestMapping/getSearch.do",
 			method=RequestMethod.GET)
 	public String getSearch(HttpServletRequest req, Model model) {
-		
+		/*
+		 요청 처리를 위한 메서드를 정의할때 해당 메서드에서 사용하고자 하는
+		 내장객체가 있다면 매개변수형태로 선언하면 즉시 사용할 수 있다.
+		 즉, 컨트롤러에 정의되는 메서드는 매개변수의 갯수가 큰 의미를 가지지 않는다.
+		 */
 		System.out.println("requestMethod.get방식으로 폼값전송");
-		
+		//request내장객체로 폼값 받기
 		String sColumn = req.getParameter("searchColumn");
 		String sWord = req.getParameter("searchWord");
-		
+		//Model객체에 데이터 저장하기 
 		model.addAttribute("sColumn",sColumn);
 		model.addAttribute("sWord",sWord);
-		
+		//뷰 호출하기
 		return "02RequestMapping/getSearch";
+	}
+	
+	@RequestMapping(method=RequestMethod.POST,
+			value="/requestMapping/postLogin.do")
+	public ModelAndView postLogin(
+			@RequestParam("user_id") String id,
+			@RequestParam("user_pw") String pw
+			) {
+		
+		/*
+		 modelandview객체
+		 	:view로 전송할 데이터의 저장과 view를 호출하는 2가지
+		 	기능을 동시에 처리할 수 있는 클래스
+		 	-view 설정: 참조변수.setViewName("뷰의 경로 및 파일명")
+		 	-model객체에 데이터 저장 : 참조변수.addObject("속성명","속성값")
+		 	최종적으로 뷰를 호출할때는 ModelAndView 참조변수를 return한다.
+		 */
+		ModelAndView mv = new ModelAndView();
+		
+		mv.setViewName("02RequestMapping/postLogin");
+		mv.addObject("id",id);
+		mv.addObject("pw",pw);
+		
+		/*
+		 ModelAndView 객체를 반환하여 뷰를 호출한다. 따라서 해당 메서드의
+		 반환타입도 동일 객체로 지정해야 한다.
+		 */
+		return mv;
+	}
+	
+	@RequestMapping("/requestMapping/modelAttribute")
+	public String studentInfo(
+			@ModelAttribute("si") StudentDTO studentDTO) {
+		return "02RequestMapping/modelAttribute";
 	}
 }
